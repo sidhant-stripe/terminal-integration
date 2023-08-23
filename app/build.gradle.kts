@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -19,6 +21,8 @@ android {
             useSupportLibrary = true
         }
     }
+
+    buildFeatures { buildConfig = true }
 
     buildTypes {
         release {
@@ -47,19 +51,33 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    val keys: Properties = Properties().apply {
+        load(File("keys.properties").inputStream())
+    }
+
+    productFlavors {
+        defaultConfig {
+            buildConfigField("String", "STRIPE_SECRET_KEY", "\"${keys.getProperty("STRIPE_SECRET_KEY")}\"")
+        }
+    }
+
 }
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.activity:activity-ktx:1.7.2")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    implementation("com.stripe:stripe-java:23.1.1")
     implementation("com.stripe:stripeterminal-localmobile:2.23.0")
     implementation("com.stripe:stripeterminal-core:2.23.0")
 

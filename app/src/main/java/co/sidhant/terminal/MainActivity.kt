@@ -1,20 +1,20 @@
 package co.sidhant.terminal
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.content.ContextCompat
 import co.sidhant.terminal.ui.theme.TerminalIntegrationTheme
-import android.Manifest
+import android.content.Intent
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import co.sidhant.terminal.stripe.ReaderActivity
 import co.sidhant.terminal.stripe.TerminalManager
 
 class MainActivity : ComponentActivity() {
@@ -27,51 +27,50 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    Text("Android")
                 }
             }
         }
-        requestLocationPermission()
+        requestPermissions()
     }
 
     private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                TerminalManager.initTerminal(applicationContext)
-            } else {
-                // Permission is denied. Handle this scenario as per your requirement.
+        registerForActivityResult(RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                if (it.value) {
+                    allPermissionsGranted()
+                } else {
+                    requestPermissions()
+                }
             }
         }
 
-    // You can use this function to request permission
-    private fun requestLocationPermission() {
-        when (PackageManager.PERMISSION_GRANTED) {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) -> {
-                // You can use the API that requires the permission.
-            }
-            else -> {
-                // You need to request permission. Call launch with the required permission
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
+    private fun requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.BLUETOOTH_ADVERTISE,
+                    android.Manifest.permission.BLUETOOTH_SCAN,
+                    android.Manifest.permission.BLUETOOTH_CONNECT,
+                )
+            )
+        } else {
+            requestLocationPermissionOnly()
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    private fun requestLocationPermissionOnly() {
+        requestPermissionLauncher.launch(
+            arrayOf(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+            )
+        )
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TerminalIntegrationTheme {
-        Greeting("Android")
+    private fun allPermissionsGranted() {
+        TerminalManager.initTerminal(applicationContext)
+        val intent = Intent(this, ReaderActivity::class.java)
+        startActivity(intent)
     }
 }

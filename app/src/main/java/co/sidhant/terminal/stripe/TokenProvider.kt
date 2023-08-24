@@ -18,16 +18,14 @@ class TokenProvider: ConnectionTokenProvider {
 
     val params = ConnectionTokenCreateParams.builder().build()
 
-    private suspend fun getConnectionToken(): ConnectionToken {
+    private fun getConnectionToken(): ConnectionToken {
         return ConnectionToken.create(params)
     }
 
     override fun fetchConnectionToken(callback: ConnectionTokenCallback) {
         try {
-            CoroutineScope(Dispatchers.IO).launch {
                 val secret = getConnectionToken().secret
                 callback.onSuccess(secret)
-            }
         } catch (e: Exception) {
             callback.onFailure(
                 ConnectionTokenException("Failed to fetch connection token", e)

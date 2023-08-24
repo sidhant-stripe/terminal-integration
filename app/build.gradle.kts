@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "co.sidhant.terminal"
         minSdk = 29
-        targetSdk = 33
+        targetSdk = 30
         versionCode = 1
         versionName = "1.0"
 

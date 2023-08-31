@@ -19,6 +19,7 @@ import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
+import com.stripe.stripeterminal.external.models.CollectConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
@@ -79,6 +80,7 @@ class ReaderActivity: ComponentActivity() {
                 CoroutineScope(Dispatchers.Main).launch {
                     Toast.makeText(applicationContext, "Successfully created payment intent: ${paymentIntent.id}", Toast.LENGTH_LONG).show()
                 }
+
                 val cancelable = TerminalManager.terminal.collectPaymentMethod(paymentIntent,
                     object : PaymentIntentCallback {
                         override fun onSuccess(paymentIntent: PaymentIntent) {
@@ -88,13 +90,15 @@ class ReaderActivity: ComponentActivity() {
                             Log.v("ReaderActivity", "Successfully collected payment method: ${paymentIntent.id}")
                             Log.v("ReaderActivity", "Successfully collected payment method: ${pm?.cardDetails}")
                             Log.v("ReaderActivity", "Successfully collected payment method: ${card?.brand} ${card?.cardholderName}")
+                            Log.v("ReaderActivity", "fingerprint: ${card?.fingerprint}")
                             // Placeholder for business logic on card before processing paymentIntent
                         }
 
                         override fun onFailure(exception: TerminalException) {
                             // Placeholder for handling exception
                         }
-                    })
+                    }, config= CollectConfiguration.Builder().updatePaymentIntent(true).build()
+                )
                 //TODO: confirm payment use terminal test app and figure out how that's happening there
             }
         })

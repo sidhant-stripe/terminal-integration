@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "co.sidhant.terminal"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "co.sidhant.terminal"
         minSdk = 29
-        targetSdk = 31
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -20,6 +20,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+    lint {
+        baseline = file("lint-baseline.xml")
     }
 
     buildFeatures { buildConfig = true }
@@ -65,10 +68,10 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("androidx.activity:activity-ktx:1.7.2")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.activity:activity-compose:1.8.0")
+    implementation("androidx.activity:activity-ktx:1.8.0")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -77,11 +80,11 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
 
-    implementation("com.stripe:stripe-java:23.1.1")
-    implementation("com.stripe:stripeterminal-localmobile:2.23.0")
-    implementation("com.stripe:stripeterminal-core:2.23.0")
+    implementation("com.stripe:stripe-java:23.9.0")
+    implementation("com.stripe:stripeterminal-localmobile:2.69.0")
+    implementation("com.stripe:stripeterminal-core:2.69.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.8.0")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     testImplementation("junit:junit:4.13.2")
